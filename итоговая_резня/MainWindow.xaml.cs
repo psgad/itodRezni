@@ -39,6 +39,11 @@ namespace итоговая_резня
             My.category_do();
             My.product_do();
             My.promotion_do();
+            My.raiting_do();
+            My.deliverer_do();
+            My.order_do();
+            My.delivery_do();
+            My.pr_or_do();
             foreach (var u in My.User_dg.Items)
             {
                 if ((u as DataRowView) == null)
@@ -82,11 +87,17 @@ namespace итоговая_резня
                                             Window2.func = 1;
                                             break;
                                         case "Кассир":
-                                            break;
-                                        case "Акционер":
-                                            break;
+                                            Hide();
+                                            new Window3().Show();
+                                            return;
                                         case "Склад":
                                             Window2.func = 2;
+                                            break;
+                                        case "Пользователь":
+                                            Window2.func = 3;
+                                            break;
+                                        case "Акционер":
+                                            Window2.func = 4;
                                             break;
                                         default:
                                             MessageBox.Show("Для данной роли нет доступного функционала");
@@ -96,6 +107,7 @@ namespace итоговая_резня
                                     w.Title = role;
                                     Hide();
                                     w.Show();
+                                    return;
                                 }
                             }
                         }
@@ -134,7 +146,7 @@ namespace итоговая_резня
         public static workerTableAdapter Worker = new workerTableAdapter();
         public static raitingTableAdapter Raiting = new raitingTableAdapter();
         public static delivererTableAdapter Deliverer = new delivererTableAdapter();
-        public static deliveryTableAdapter Delivere = new deliveryTableAdapter();
+        public static deliveryTableAdapter Delivery = new deliveryTableAdapter();
         public static morderTableAdapter Order = new morderTableAdapter();
         public static product_orderTableAdapter pr_or = new product_orderTableAdapter();
         public static promotionTableAdapter Promotion = new promotionTableAdapter();
@@ -149,6 +161,27 @@ namespace итоговая_резня
         public static DataGrid Product_dg = new DataGrid();
         public static DataGrid Category_dg = new DataGrid();
         public static DataGrid Promotion_dg = new DataGrid();
+        public static DataGrid Deliverer_dg = new DataGrid();
+        public static DataGrid Raiting_dg = new DataGrid();
+        public static DataGrid Delivery_dg = new DataGrid();
+        public static DataGrid Order_dg = new DataGrid();
+        public static DataGrid Pr_Or_dg = new DataGrid();
+        public static void pr_or_do(int doing = 0, int c1 = -1, int c2 = -1, int c3 = -1)
+        {
+            Pr_Or_dg.ItemsSource = pr_or.GetData();
+            switch (doing)
+            {
+                case 0:
+                    break;
+                case 1:
+                    pr_or.InsertQuery(c1, c2, c3);
+                    break;
+                case 2:
+                    pr_or.DeleteQuery();
+                    break;
+            }
+            Pr_Or_dg.ItemsSource = pr_or.GetData();
+        }
         public static void user_do(int doing = 0, int c1 = -1, string c2 = "", string c3 = "", string c4 = "")
         {
             User_dg.ItemsSource = User.GetData();
@@ -281,6 +314,82 @@ namespace итоговая_резня
                     break;
             }
             Category_dg.ItemsSource = Category.GetData();
+        }
+        public static void deliverer_do(int doing = 0, int c1 = -1, string c2 = "", int c3 = -1)
+        {
+            Deliverer_dg.ItemsSource = Deliverer.GetData();
+            switch (doing)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Deliverer.InsertQuery(c2, c3);
+                    break;
+                case 2:
+                    Deliverer.DeleteQuery(c1);
+                    break;
+                case 3:
+                    Deliverer.UpdateQuery(c2, c3, c1);
+                    break;
+            }
+            Deliverer_dg.ItemsSource = Deliverer.GetData();
+        }
+        public static void raiting_do(int doing = 0, int c1 = -1, int c2 = -1, int c3 = -1, int c4 = -1)
+        {
+            Raiting_dg.ItemsSource = Raiting.GetData();
+            switch (doing)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Raiting.InsertQuery(c2, c3, c4);
+                    break;
+                case 2:
+                    Raiting.DeleteQuery(c1);
+                    break;
+                case 3:
+                    Raiting.UpdateQuery(c2, c3, c4, c1);
+                    break;
+            }
+            Raiting_dg.ItemsSource = Raiting.GetData();
+        }
+        public static void delivery_do(int doing = 0, int c1 = -1, int c2 = -1, int c3 = -1, string c4 = "", int c5 = -1)
+        {
+            Delivery_dg.ItemsSource = Delivery.GetData();
+            switch (doing)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Delivery.InsertQuery(c2, c3, c4, c5);
+                    break;
+                case 2:
+                    Delivery.DeleteQuery(c1);
+                    break;
+                case 3:
+                    Delivery.UpdateQuery(c2, c3, c4, c5, c1);
+                    break;
+            }
+            Delivery_dg.ItemsSource = Delivery.GetData();
+        }
+        public static void order_do(int doing = 0, int c1 = -1, int c2 = -1, string c3 = "")
+        {
+            Order_dg.ItemsSource = Order.GetData();
+            switch (doing)
+            {
+                case 0:
+                    break;
+                case 1:
+                    Order.InsertQuery(c2, c3);
+                    break;
+                case 2:
+                    Order.DeleteQuery(c1);
+                    break;
+                case 3:
+                    Order.UpdateQuery(c2, c3, c1);
+                    break;
+            }
+            Order_dg.ItemsSource = Order.GetData();
         }
     }
 }

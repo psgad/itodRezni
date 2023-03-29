@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +45,8 @@ namespace итоговая_резня
             {
                 if (vib == 2)
                 {
+                    if (data.Columns.Count != 4)
+                        return;
                     Text1.Text = (data.SelectedItem as DataRowView)[1].ToString();
                     Text2.Text = (data.SelectedItem as DataRowView)[2].ToString();
                     cb3.SelectedItem = (data.SelectedItem as DataRowView)[3].ToString();
@@ -79,9 +82,7 @@ namespace итоговая_резня
                         if ((y as DataRowView) == null)
                             break;
                         if (Convert.ToInt32((data.SelectedItem as DataRowView)[0]) == Convert.ToInt32((y as DataRowView)[0]))
-                        {
                             cb1.SelectedItem = (y as DataRowView)[1].ToString();
-                        }
                     }
                     try
                     {
@@ -92,6 +93,39 @@ namespace итоговая_резня
                         Text6.Text = (data.SelectedItem as DataRowView)[6].ToString();
                     }
                     catch { }
+                }
+                if (vib == 6)
+                {
+                    Text1.Text = (data.SelectedItem as DataRowView)[2].ToString();
+                    foreach (var y in My.Raiting_dg.Items)
+                    {
+                        if ((y as DataRowView) == null)
+                            break;
+                        if (Convert.ToInt32((y as DataRowView)[0]) == Convert.ToInt32((data.SelectedItem as DataRowView)[2]))
+                            cb2.SelectedItem = Convert.ToInt32((y as DataRowView)[3]);
+
+                    }
+                }
+                if (vib == 7)
+                {
+                    Text1.Text = (data.SelectedItem as DataRowView)[1].ToString();
+                    Text2.Text = (data.SelectedItem as DataRowView)[2].ToString();
+                    Text3.Text = (data.SelectedItem as DataRowView)[3].ToString();
+                }
+                if (vib == 8)
+                {
+                    foreach (var y in My.Category_dg.Items)
+                    {
+                        if (y as DataRowView == null)
+                            break;
+                        if (Convert.ToInt32((y as DataRowView)[0]) == Convert.ToInt32((data.SelectedItem as DataRowView)[1]))
+                        {
+                            cb1.SelectedItem = (y as DataRowView)[1].ToString();
+                            break;
+                        }
+                    }
+                    Text2.Text = (data.SelectedItem as DataRowView)[2].ToString();
+                    Text3.Text = (data.SelectedItem as DataRowView)[3].ToString();
                 }
             }
         }
@@ -111,6 +145,27 @@ namespace итоговая_резня
                     viz(naz1, Text1, "Продукт");
                     viz(naz2, Text2, "Адрес");
                     viz(naz3, Text3, "Количество");
+                    break;
+                case 3:
+                    bb();
+                    data.ItemsSource = My.Deliverer_dg.Items;
+                    vib = 6;
+                    bu2.Visibility = Visibility.Hidden;
+                    bu1.Content = "Курьер";
+                    bu3.Content = "Рейтинг";
+                    viz(naz1, Text1, "Имя");
+                    cbVis(naz2, "Оценка", cb2, 3, My.Raiting_dg);
+                    break;
+                case 4:
+                    bb();
+                    data.ItemsSource = My.Promotion_dg.Items;
+                    vib = 8;
+                    bu2.Visibility = Visibility.Hidden;
+                    bu3.Visibility = Visibility.Hidden;
+                    bu1.Content = "Акции";
+                    cbVis(naz1, "Категория", cb1, 1, My.Category_dg);
+                    viz(naz2, Text2, "Начало акции");
+                    viz(naz3, Text3, "Конец акции");
                     break;
             }
         }
@@ -216,7 +271,7 @@ namespace итоговая_резня
             {
                 try
                 {
-                    if (Convert.ToInt32(Text3.Text) <= 0)
+                    if (Convert.ToInt32(Text3.Text) <= 0 || Convert.ToDouble(Text5.Text) <= 0 || Convert.ToDouble(Text5.Text) <= 0 || Convert.ToDouble(Text6.Text) <= 0)
                     {
                         MainWindow.n("Введено недопустимое значение!");
                         och();
@@ -234,14 +289,89 @@ namespace итоговая_резня
                     if ((y as DataRowView) == null)
                         break;
                     if ((y as DataRowView)[1] == cb1.SelectedItem)
+                        My.product_do(1, -1, Convert.ToInt32((y as DataRowView)[0]), Text2.Text, Convert.ToInt32(Text3.Text), Convert.ToInt32(Text4.Text), Convert.ToDouble(Text5.Text), Convert.ToDouble(Text6.Text));
+                }
+            }
+            if (vib == 6)
+                MessageBox.Show("Вы не обладаете правом добавлять данные курьера, но вы можете изменить его рейтинг");
+            if (vib == 7)
+            {
+                if (Text1.Text == "" || Text2.Text == " " || Text3.Text == "")
+                {
+                    MainWindow.n("Не все поля заполнены");
+                    return;
+                }
+                try
+                {
+                    if (Convert.ToInt32(Text1.Text) <= 0 || Convert.ToInt32(Text2.Text) <= 0 || Convert.ToInt32(Text3.Text) <= 0)
                     {
-                         My.product_do(1, -1, Convert.ToInt32((y as DataRowView)[0]), Text2.Text, Convert.ToInt32(Text3.Text), Convert.ToInt32(Text4.Text), Convert.ToDouble(Text5.Text), Convert.ToDouble(Text6.Text));
+                        MainWindow.n("Введено недопустимое значение!");
+                        och();
+                        return;
+                    }
+                }
+                catch
+                {
+                    MainWindow.n("Введено недопустимое значение!");
+                    och();
+                    return;
+                }
+                try
+                {
+                    if (Convert.ToInt32(Text3.Text) > 5 || Convert.ToInt32(Text3.Text) < 2)
+                    {
+                        MainWindow.n("Введено недопустимое значение!");
+                        och();
+                        return;
+                    }
+                }
+                catch
+                {
+                    MainWindow.n("Введено недопустимое значение!");
+                    och();
+                    return;
+                }
+                My.raiting_do(1, -1, Convert.ToInt32(Text1.Text), Convert.ToInt32(Text2.Text), Convert.ToInt32(Text3.Text));
+                och();
+            }
+            if (vib == 8)
+            {
+                DateTime dateTime;
+                if (DateTime.TryParse(Text2.Text, out dateTime))
+                {
+                    DateTime.TryParse(Text2.Text, out dateTime);
+                }
+                else
+                {
+                    MessageBox.Show("Строка не имеет вид даты");
+                }
+                DateTime dateTim;
+                if (DateTime.TryParse(Text2.Text, out dateTim))
+                {
+                    DateTime.TryParse(Text2.Text, out dateTim);
+                }
+                else
+                {
+                    MessageBox.Show("Строка не имеет вид даты");
+                }
+                if (Text2.Text == "" || Text3.Text == "")
+                {
+                    MessageBox.Show("Не все поля заполнены!");
+                    return;
+                }
+                foreach (var y in My.Category_dg.Items)
+                {
+                    if (y as DataRowView == null)
+                    {
+                        break;
+                    }
+                    if ((y as DataRowView)[1] == cb1.SelectedItem)
+                    {
+                        My.promotion_do(1, -1, Convert.ToInt32((y as DataRowView)[0]), dateTime.ToString(), dateTim.ToString());
                     }
                 }
             }
-            och();
         }
-
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (vib == 2)
@@ -342,7 +472,7 @@ namespace итоговая_резня
                 }
                 My.stock_do(1, Convert.ToInt32((data.SelectedItem as DataRowView)[0]), Text1.Text, Text2.Text, Convert.ToInt32(Text3.Text));
             }
-            if (vib == 6)
+            if (vib == 5)
             {
                 try
                 {
@@ -369,6 +499,84 @@ namespace итоговая_резня
                     }
                 }
             }
+            if (vib == 6)
+                MessageBox.Show("Вы не обладаете правом исправлять данные курьера, но вы можете изменить его рейтинг");
+            if (vib == 7)
+            {
+                if (Text1.Text == "" || Text2.Text == " " || Text3.Text == "")
+                {
+                    MainWindow.n("Не все поля заполнены");
+                    return;
+                }
+                try
+                {
+                    if (Convert.ToInt32(Text1.Text) <= 0 || Convert.ToInt32(Text2.Text) <= 0 || Convert.ToInt32(Text3.Text) <= 0)
+                    {
+                        MainWindow.n("Введено недопустимое значение!");
+                        och();
+                        return;
+                    }
+                }
+                catch
+                {
+                    MainWindow.n("Введено недопустимое значение!");
+                    och();
+                    return;
+                }
+                try
+                {
+                    if (Convert.ToInt32(Text3.Text) > 5 || Convert.ToInt32(Text3.Text) < 2)
+                    {
+                        MainWindow.n("Введено недопустимое значение!");
+                        och();
+                        return;
+                    }
+                }
+                catch
+                {
+                    MainWindow.n("Введено недопустимое значение!");
+                    och();
+                    return;
+                }
+                My.raiting_do(3, Convert.ToInt32((data.SelectedItem as DataRowView)[0]), Convert.ToInt32(Text1.Text), Convert.ToInt32(Text2.Text), Convert.ToInt32(Text3.Text));
+            }
+            if (vib == 8)
+            {
+                DateTime dateTime;
+                if (DateTime.TryParse(Text2.Text, out dateTime))
+                {
+                    DateTime.TryParse(Text2.Text, out dateTime);
+                }
+                else
+                {
+                    MessageBox.Show("Строка не имеет вид даты");
+                }
+                DateTime dateTim;
+                if (DateTime.TryParse(Text2.Text, out dateTim))
+                {
+                    DateTime.TryParse(Text2.Text, out dateTim);
+                }
+                else
+                {
+                    MessageBox.Show("Строка не имеет вид даты");
+                }
+                if (Text2.Text == "" || Text3.Text == "")
+                {
+                    MessageBox.Show("Не все поля заполнены!");
+                    return;
+                }
+                foreach (var y in My.Category_dg.Items)
+                {
+                    if (y as DataRowView == null)
+                    {
+                        break;
+                    }
+                    if ((y as DataRowView)[1] == cb1.SelectedItem)
+                    {
+                        My.promotion_do(3, Convert.ToInt32((data.SelectedItem as DataRowView)[0]), Convert.ToInt32((y as DataRowView)[0]), dateTime.ToString(), dateTim.ToString());
+                    }
+                }
+            }
             och();
 
         }
@@ -385,27 +593,22 @@ namespace итоговая_резня
                 MainWindow.n("Вы выбрали пустую строку ");
                 return;
             }
-            if (vib == 2)
-            {
-
-                My.user_do(2, Convert.ToInt32((data.SelectedItem as DataRowView)[0]));
-            }
             if (vib == 1)
-            {
                 My.role_do(2, Convert.ToInt32((data.SelectedItem as DataRowView)[0]));
-            }
+            if (vib == 2)
+                My.user_do(2, Convert.ToInt32((data.SelectedItem as DataRowView)[0]));
             if (vib == 3)
-            {
                 My.worker_do(2, (data.SelectedItem as DataRowView)[0].ToString());
-            }
             if (vib == 4)
-            {
                 My.stock_do(2, Convert.ToInt32((data.SelectedItem as DataRowView)[0]));
-            }
             if (vib == 5)
-            {
                 My.product_do(2, Convert.ToInt32((data.SelectedItem as DataRowView)[0]));
-            }
+            if (vib == 6)
+                MessageBox.Show("Вы не обладаете правом удалять данные курьера, но вы можете изменить его рейтинг");
+            if (vib == 7)
+                MainWindow.n("Вы не обладаете правом удалять результаты оценивания курьера");
+            if (vib == 8)
+                My.promotion_do(2, Convert.ToInt32((data.SelectedItem as DataRowView)[0]));
             och();
         }
 
@@ -419,7 +622,7 @@ namespace итоговая_резня
             tb.Visibility = Visibility.Visible;
             l.Content = n1;
         }
-        void cbVis(Label l, string naz, ComboBox cb, int sel, DataGrid dg)
+        public static void cbVis(Label l, string naz, ComboBox cb, int sel, DataGrid dg)
         {
             l.Content = naz;
             cb.Visibility = Visibility.Visible;
@@ -488,6 +691,14 @@ namespace итоговая_резня
                 viz(naz2, Text2, "Адрес");
                 viz(naz3, Text3, "Количество");
             }
+            if (func == 3)
+            {
+                bb();
+                data.ItemsSource = My.Deliverer_dg.Items;
+                vib = 6;
+                viz(naz1, Text1, "Имя");
+                cbVis(naz2, "Оценка", cb2, 3, My.Raiting_dg);
+            }
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -531,6 +742,16 @@ namespace итоговая_резня
                 viz(naz4, Text4, "Цена");
                 viz(naz5, Text5, "НДС");
                 viz(naz6, Text6, "Доподнительная скидка");
+                och();
+            }
+            if (func == 3)
+            {
+                bb();
+                vib = 7;
+                data.ItemsSource = My.Raiting_dg.Items;
+                viz(naz1, Text1, "Положительных отзывов");
+                viz(naz2, Text2, "Отрицательных отзывов");
+                viz(naz3, Text3, "Оценка");
                 och();
             }
         }
